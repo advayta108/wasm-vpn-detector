@@ -1,0 +1,29 @@
+# GitHub Linguist — TypeScript as the primary language of this repo.
+# https://github.com/github-linguist/linguist/blob/main/docs/overrides.md
+
+# AssemblyScript sources are TypeScript-family.
+assembly/** linguist-language=TypeScript
+src/**/*.ts linguist-language=TypeScript
+
+# Build artifacts (WASM/WAT) — generated, not in language stats.
+build/** linguist-generated
+*.wat linguist-generated
+src/generated/** linguist-generated
+
+# Checked-in demo WASM — count as WebAssembly on GitHub (not generated).
+public/module.wasm binary linguist-language=WebAssembly linguist-generated=false linguist-detectable
+
+# Lockfiles and bundled assets — exclude from stats.
+package-lock.json linguist-generated
+public/ranges.bin binary
+
+# Docs, community templates, and demo markup — not "project code".
+*.md linguist-documentation
+.github/** linguist-documentation
+index.html linguist-documentation
+LICENSE.md linguist-documentation
+CODE_OF_CONDUCT.md linguist-documentation
+SECURITY.md linguist-documentation
+
+# Small Node test harness — treat as TypeScript ecosystem, not standalone JS.
+test/** linguist-language=TypeScript

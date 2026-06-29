@@ -1,0 +1,35 @@
+{
+  "name": "vpn-detector",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "sync:ranges": "node scripts/sync-ranges.mjs",
+    "build:data": "node scripts/build-ranges.mjs",
+    "generate:pwa-icons": "node scripts/generate-pwa-icons.mjs",
+    "asbuild:debug": "asc assembly/index.ts --target debug --outFile src/generated/module.debug.wasm",
+    "asbuild:release": "asc assembly/index.ts --target release --outFile src/generated/module.wasm",
+    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
+    "predev": "npm run sync:ranges && npm run build:data && npm run asbuild:release && npm run generate:pwa-icons",
+    "dev": "vite",
+    "prebuild": "npm run sync:ranges && npm run build:data && npm run asbuild:release && npm run generate:pwa-icons",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "assemblyscript": "^0.28.19",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^4.1.18",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.0",
+    "vite-plugin-pwa": "^1.2.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/release.js",
+      "types": "./build/release.d.ts"
+    }
+  }
+}

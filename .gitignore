@@ -1,0 +1,8 @@
+node_modules
+dist
+src/generated/module.wasm
+src/generated/module.js
+src/generated/module.d.ts
+src/generated/module.wasm.map
+src/generated/module.debug.wasm
+public/ranges.bin

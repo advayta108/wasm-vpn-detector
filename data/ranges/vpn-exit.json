@@ -1,0 +1,20 @@
+[
+  { "cidr": "85.203.0.0/16", "weight": 85, "label": "M247 VPN/datacenter" },
+  { "cidr": "89.187.128.0/18", "weight": 85, "label": "M247 VPN/datacenter" },
+  { "cidr": "138.199.0.0/16", "weight": 85, "label": "M247 VPN/datacenter" },
+  { "cidr": "176.10.99.0/24", "weight": 88, "label": "VPN exit pool" },
+  { "cidr": "185.156.172.0/22", "weight": 88, "label": "VPN exit pool" },
+  { "cidr": "185.213.154.0/24", "weight": 88, "label": "VPN exit pool" },
+  { "cidr": "37.19.200.0/21", "weight": 85, "label": "NordVPN/M247" },
+  { "cidr": "45.134.132.0/22", "weight": 85, "label": "Surfshark/datacenter" },
+  { "cidr": "146.70.0.0/16", "weight": 82, "label": "Mullvad/ProtonVPN hosting" },
+  { "cidr": "149.50.0.0/16", "weight": 82, "label": "M247/ProtonVPN" },
+  { "cidr": "152.89.0.0/16", "weight": 80, "label": "VPN hosting EU" },
+  { "cidr": "193.148.0.0/16", "weight": 80, "label": "VPN hosting EU" },
+  { "cidr": "194.5.48.0/22", "weight": 85, "label": "Windscribe/datacenter" },
+  { "cidr": "45.83.64.0/22", "weight": 82, "label": "CyberGhost hosting" },
+  { "cidr": "91.219.236.0/22", "weight": 80, "label": "EU VPN pool" },
+  { "cidr": "103.86.96.0/22", "weight": 78, "label": "PIA VPN hosting" },
+  { "cidr": "185.230.0.0/16", "weight": 80, "label": "Datacenter VPN EU" },
+  { "cidr": "45.14.0.0/16", "weight": 78, "label": "Hosting/VPN EU" }
+]
