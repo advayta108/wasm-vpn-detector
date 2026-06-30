@@ -33,7 +33,7 @@
     "electron": "^39.2.6",
     "electron-builder": "^26.0.12",
     "esbuild": "^0.28.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.2",
     "tailwindcss": "^4.1.18",
     "to-ico": "^1.1.5",
     "typescript": "~6.0.2",
