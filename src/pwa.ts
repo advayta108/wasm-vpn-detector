@@ -6,6 +6,11 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function setupPwaInstall(installBtn: HTMLButtonElement): void {
+  if (window.electronAPI?.isElectron) {
+    installBtn.hidden = true;
+    return;
+  }
+
   let deferredPrompt: BeforeInstallPromptEvent | null = null;
 
   const isStandalone =
@@ -42,6 +47,10 @@ export function setupPwaInstall(installBtn: HTMLButtonElement): void {
 }
 
 export function registerServiceWorker(): void {
+  if (window.electronAPI?.isElectron) {
+    return;
+  }
+
   if (import.meta.env.DEV) {
     void navigator.serviceWorker?.getRegistrations().then((regs) => {
       for (const reg of regs) void reg.unregister();

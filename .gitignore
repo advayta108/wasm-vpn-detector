@@ -1,5 +1,6 @@
 node_modules
 dist
+release
 src/generated/module.wasm
 src/generated/module.js
 src/generated/module.d.ts

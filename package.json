@@ -1,8 +1,11 @@
 {
   "name": "vpn-detector",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.0",
+  "description": "Client-side VPN/proxy audit: WASM IP lookup, DNS & WebRTC leaks, fingerprint, masking 0–100. No backend — no data stored.",
+  "author": "advayta108",
+  "main": "dist/electron/main.js",
+  "homepage": "./",
   "scripts": {
     "sync:ranges": "node scripts/sync-ranges.mjs",
     "build:data": "node scripts/build-ranges.mjs",
@@ -14,17 +17,61 @@
     "dev": "vite",
     "prebuild": "npm run sync:ranges && npm run build:data && npm run asbuild:release && npm run generate:pwa-icons",
     "build": "tsc && vite build",
+    "build:electron": "npm run build",
     "preview": "vite preview",
-    "test": "node --test"
+    "test": "node --test",
+    "electron:compile": "node scripts/compile-electron.mjs",
+    "electron:build": "npm run build:electron && npm run electron:compile",
+    "electron:dev": "npm run electron:compile && electron dist/electron/main.js",
+    "electron:dist": "npm run electron:build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win --x64 --publish=never --config.win.forceCodeSigning=false"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",
+    "@types/node": "^22.10.2",
     "assemblyscript": "^0.28.19",
+    "cross-env": "^10.1.0",
+    "electron": "^39.2.6",
+    "electron-builder": "^26.0.12",
+    "esbuild": "^0.28.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.18",
+    "to-ico": "^1.1.5",
     "typescript": "~6.0.2",
     "vite": "^8.1.0",
     "vite-plugin-pwa": "^1.2.0"
+  },
+  "build": {
+    "appId": "com.advayta108.vpn-detector",
+    "productName": "VPN Proxy Detector",
+    "directories": {
+      "output": "release",
+      "buildResources": "build/electron"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "extraMetadata": {
+      "main": "dist/electron/main.js"
+    },
+    "npmRebuild": false,
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": false,
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/RKN.ico",
+      "forceCodeSigning": false,
+      "verifyUpdateCodeSignature": false,
+      "signAndEditExecutable": false
+    }
   },
   "exports": {
     ".": {

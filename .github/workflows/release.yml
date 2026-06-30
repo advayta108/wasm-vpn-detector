@@ -1,0 +1,115 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync package version from tag
+        run: |
+          $tag = "${{ github.ref_name }}"
+          if (-not $tag) { $tag = "${{ github.event.inputs.version }}" }
+          npm version $tag --no-git-tag-version --allow-same-version
+        shell: pwsh
+
+      - name: Build Electron desktop from source
+        run: |
+          Write-Host "Building VPN Detector desktop app from source..." >> $env:GITHUB_STEP_SUMMARY
+          $env:CSC_IDENTITY_AUTO_DISCOVERY = "false"
+          npm run electron:dist
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          Write-Host "✅ Electron build completed" >> $env:GITHUB_STEP_SUMMARY
+        shell: pwsh
+
+      - name: Create source archive
+        id: source_archive
+        run: |
+          $tag = "${{ github.ref_name }}"
+          if (-not $tag) { $tag = "${{ github.event.inputs.version }}" }
+          $archive = "wasm-vpn-detector-$tag-source.zip"
+          git archive --format=zip --output=$archive HEAD
+          "archive=$archive" >> $env:GITHUB_OUTPUT
+          "✅ Source archive: $archive" >> $env:GITHUB_STEP_SUMMARY
+        shell: pwsh
+
+      - name: Find portable executable
+        id: find_exe
+        run: |
+          if (-not (Test-Path "release")) {
+            Write-Host "❌ release/ directory not found" >> $env:GITHUB_STEP_SUMMARY
+            exit 1
+          }
+
+          $exe = Get-ChildItem -Path release -Filter "*.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $exe) {
+            Write-Host "❌ No .exe found in release/" >> $env:GITHUB_STEP_SUMMARY
+            Get-ChildItem -Path release -Recurse | ForEach-Object { Write-Host $_.FullName >> $env:GITHUB_STEP_SUMMARY }
+            exit 1
+          }
+
+          $tag = "${{ github.ref_name }}"
+          if (-not $tag) { $tag = "${{ github.event.inputs.version }}" }
+          $uploadName = "VPN-Proxy-Detector-$tag-portable.exe"
+          $uploadPath = Join-Path $env:GITHUB_WORKSPACE "release" $uploadName
+          Copy-Item -LiteralPath $exe.FullName -Destination $uploadPath -Force
+
+          "exe_path=release/$uploadName" >> $env:GITHUB_OUTPUT
+          "exe_name=$uploadName" >> $env:GITHUB_OUTPUT
+          "✅ Executable: $uploadName (from $($exe.Name))" >> $env:GITHUB_STEP_SUMMARY
+        shell: pwsh
+
+      - name: Resolve release tag
+        id: release_tag
+        run: |
+          $tag = "${{ github.ref_name }}"
+          if (-not $tag) { $tag = "${{ github.event.inputs.version }}" }
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vpn-detector-${{ steps.release_tag.outputs.tag }}
+          path: |
+            ${{ steps.find_exe.outputs.exe_path }}
+            ${{ steps.source_archive.outputs.archive }}
+          retention-days: 30
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: Release ${{ steps.release_tag.outputs.tag }}
+          files: |
+            ${{ steps.find_exe.outputs.exe_path }}
+            ${{ steps.source_archive.outputs.archive }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          draft: false
+          prerelease: false

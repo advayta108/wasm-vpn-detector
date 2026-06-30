@@ -1,11 +1,13 @@
-import { mkdir } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import toIco from 'to-ico';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const source = join(root, 'public', 'favicon.svg');
+const source = join(root, 'public', 'RKN.png');
 const outDir = join(root, 'public', 'pwa');
+const maskableBackground = '#000000';
 
 const icons = [
   { file: 'apple-touch-icon.png', size: 180 },
@@ -29,7 +31,7 @@ for (const icon of icons) {
         width: icon.size,
         height: icon.size,
         channels: 4,
-        background: '#863bff',
+        background: maskableBackground,
       },
     })
       .composite([{ input: resized, left: inset, top: inset }])
@@ -41,3 +43,11 @@ for (const icon of icons) {
 
   console.log(`wrote ${icon.file}`);
 }
+
+const icoSizes = [16, 24, 32, 48, 64, 128, 256];
+const icoBuffers = await Promise.all(
+  icoSizes.map((size) => sharp(source).resize(size, size).png().toBuffer()),
+);
+const ico = await toIco(icoBuffers);
+await writeFile(join(root, 'public', 'RKN.ico'), ico);
+console.log('wrote RKN.ico');

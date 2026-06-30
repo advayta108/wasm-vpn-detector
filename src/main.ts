@@ -65,7 +65,7 @@ async function run() {
 
   try {
     setStatus('Загружаю таблицу диапазонов в WASM…');
-    const rangesBuf = await fetch('/ranges.bin').then((r) => r.arrayBuffer());
+    const rangesBuf = await fetch(`${import.meta.env.BASE_URL}ranges.bin`).then((r) => r.arrayBuffer());
     const wasmMod = await buildRangeIndex(rangesBuf);
 
     setStatus('Собираю отпечаток браузера…');

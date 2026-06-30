@@ -3,11 +3,12 @@ import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: './',
   plugins: [
     tailwindcss(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.svg', 'pwa/*.png'],
+      includeAssets: ['RKN.ico', 'RKN.png', 'pwa/*.png'],
       manifest: {
         name: 'VPN/Proxy Detector',
         short_name: 'VPN Detector',
@@ -17,8 +18,8 @@ export default defineConfig({
         background_color: '#0f1115',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
-        scope: '/',
+        start_url: './',
+        scope: './',
         icons: [
           {
             src: 'pwa/android-chrome-192x192.png',
